@@ -1,0 +1,26 @@
+{
+  "name": "lms-cli-notifications",
+  "version": "0.1.0",
+  "description": "Node module for subscribing to and receiving notifications through Logitech Media Server's CLI",
+  "main": "./lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/patrickkfkan/lms-cli-notifications.git"
+  },
+  "keywords": [
+    "logitech media server",
+    "squeezebox",
+    "cli",
+    "notifications",
+    "subscribe"
+  ],
+  "author": "Patrick Kan",
+  "license": "MIT",
+  "dependencies": {
+    "eventemitter3": "^4.0.7",
+    "telnet-client": "^2.0.2"
+  }
+}
