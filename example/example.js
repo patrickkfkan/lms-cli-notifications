@@ -58,7 +58,7 @@ notificationListener.start()
     console.log('Currently subscribed notifications:', notificationListener.getSubscribed());
     // Subscribe to more notifications
     console.log(`Let's subscribe to more...`);
-    await notificationListener.subscribe('play', 'stop', 'pause');
+    await notificationListener.subscribe(['play', 'stop', 'pause']);
     console.log('Currently subscribed notifications:', notificationListener.getSubscribed());
   })
   .catch((err) => {
