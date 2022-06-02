@@ -271,6 +271,9 @@ After sending a command to the server, a response is expected but not received w
 
 ## Changelog
 
+0.1.2:
+- Fix blank credentials causing login timeout
+
 0.1.1:
 - Fix example
 

@@ -1,6 +1,6 @@
 {
   "name": "lms-cli-notifications",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Node module for subscribing to and receiving notifications through Logitech Media Server's CLI",
   "main": "./lib/index.js",
   "scripts": {
