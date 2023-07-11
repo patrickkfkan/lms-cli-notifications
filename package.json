@@ -1,14 +1,59 @@
 {
   "name": "lms-cli-notifications",
   "version": "0.1.2",
+  "type": "module",
   "description": "Node module for subscribing to and receiving notifications through Logitech Media Server's CLI",
-  "main": "./lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm run prepare",
+    "build:esm": "npx tsc -p tsconfig-esm.json",
+    "build:cjs": "npx tsc -p tsconfig.json",
+    "prepare": "rm -rf dist && npm run build:esm && npm run build:cjs && bash fixup.sh",
+    "lint": "npx eslint ./src && npx eslint ./example",
+    "lint:fix": "npx eslint ./src --fix && npx eslint ./example --fix",
+    "doc": "npx typedoc",
+    "example": "npx ts-node -P ./tsconfig-esm.json --esm ./example"
   },
+  "main": "./dist/cjs/index-cjs.js",
+  "module": "./dist/mjs/index.js",
+  "types": "./dist/mjs/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/mjs/index.d.ts",
+        "default": "./dist/mjs/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index-cjs.js"
+      }
+    }
+  },
+  "author": "Patrick Kan <patrickkfkan@gmail.com> (https://github.com/patrickkfkan)",
   "repository": {
     "type": "git",
     "url": "https://github.com/patrickkfkan/lms-cli-notifications.git"
+  },
+  "license": "MIT",
+  "directories": {
+    "dist": "./dist"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "devDependencies": {
+    "@types/node": "^14.18.38",
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "@typescript-eslint/parser": "^5.56.0",
+    "eslint": "^8.36.0",
+    "eslint-plugin-tsdoc": "^0.2.17",
+    "ts-node": "^10.9.1",
+    "typedoc": "^0.24.0",
+    "typedoc-plugin-markdown": "^3.14.0",
+    "typedoc-plugin-rename-defaults": "^0.6.4",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "telnet-client": "^2.0.8"
   },
   "keywords": [
     "logitech media server",
@@ -16,11 +61,5 @@
     "cli",
     "notifications",
     "subscribe"
-  ],
-  "author": "Patrick Kan",
-  "license": "MIT",
-  "dependencies": {
-    "eventemitter3": "^4.0.7",
-    "telnet-client": "^2.0.2"
-  }
+  ] 
 }

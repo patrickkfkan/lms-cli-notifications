@@ -25,6 +25,9 @@ $ telnet <server_address>:<cli_port>
 In Node.JS, you would do this:
 
 ```
+// ESM
+import { NotificationListener } from 'lms-cli-notifications';
+// CJS
 const { NotificationListener } = require('lms-cli-notifications');
 
 const server = {
@@ -75,18 +78,26 @@ npm install --save lms-cli-notifications
 
 A `NotificationListener` encapsulates the process of connecting to a Logitech Media Server's CLI, subscribing to notifications and receiving them (communicating back by way of Events). You would begin by first creating a `NotificationListener` instance.
 
-### `new NotificationListener([params])`
-- `params` \<Object\> (all properties optional):
-    - `server` \<Object\>:
-        - `host`: address of server to connect to (default: '127.0.0.1`).
-        - `port`: server's CLI port (default: '9090').
-        - `username`: username for login - omit if not applicable.
-        - `password`: password for login - omit if not applicable.
-    - `subscribe` \<string | Array\>: notification (if string value) or list of notifications (if array value) to subscribe to.
+<details>
+<summary><code>new NotificationListener([params])</code></summary>
+<br />
 
-Creates a `NotificationListener` instance and associates it with `server`, or `127.0.0.1:9090` if not specified..
+Creates a `NotificationListener` instance and associates it with `server`, or `127.0.0.1:9090` if not specified.
 
-The `subscribe` param is included merely for convenience. You can subscribe to notifications at any stage by calling `subscribe()`. So the following code:
+**Params**
+
+- `params`: ([`NotificationListenerParams`](docs/api/interfaces/NotificationListenerParams.md)) (*optional* and *all properties optional*)
+    - `server`:
+        - `host`: (string) address of server to connect to (default: '127.0.0.1`).
+        - `port`: (string) server's CLI port (default: '9090').
+        - `username`: (string) username for login - omit if not applicable.
+        - `password`: (string) password for login - omit if not applicable.
+    - `subscribe`: (string | Array\<string>)
+      - If string, the notification to subscribe to.
+      - If array, the list of notifications to subscribe to.
+
+
+The `subscribe` param is included merely for convenience. You can subscribe to notifications at any stage by calling `subscribe()`. So the following:
 ```
 const server = { ... };
 const notifications = ['client', 'mixer'];
@@ -98,7 +109,7 @@ const notificationListener = new NotificationListener({
 notificationListener.start();
 ```
 
-has the same effect as this:
+has the same effect as:
 
 ```
 ...
@@ -108,123 +119,144 @@ notificationListener.subscribe(notifications);
 notificationListener.start();
 ```
 
-### `notificationListener.start()`
+---
+</details>
 
-- Returns: \<Promise\>
+<details>
+<summary><code>notificationListener.start()</code></summary>
+<br />
 
-Connect to the server and subscribe to the notification or list of notifications specified at construction time, if any. Returns a promise that resolves to `true` on success.
+Establishes connection with the server and subscribes to the notification(s) specified at construction time.
 
-### `notificationListener.stop()`
+**Returns**
 
-- Returns: \<Promise\>
+Promise that resolves to `true` on success.
 
-Disconnect from the server. Returns a promise that resolves to `true` on success.
+---
+</details>
 
-### `notificationListener.isConnected()`
+<details>
+<summary><code>notificationListener.stop()</code></summary>
+<br />
 
-Returns `true` if the `NotificationListener` is connected to the server, `false` otherwise.
+Terminates connection with the server.
 
-### `notificationListener.subscribe(notification)`
+**Returns**
 
-- `notification` \<string | Array\>
-- Returns: \<Promise\>
+Promise that resolves to `true` on success.
 
-Subscribe to `notification` (if string value) or list of notifications (if array value):
-- If server is not yet connected, the function returns a promise that resolves after placing `notification` in a list of pending subscriptions. Actual subscription will take place when the server is connected.
-- If server is already connected, the function returns a promise that resolves on successful subscription.
+---
+</details>
 
-### `notificationListener.unsubscribe(notification)`
+<details>
+<summary><code>notificationListener.isConnected()</code></summary>
+<br />
 
-- `notification` \<string | Array\>
-- Returns: \<Promise\>
+Whether the `NotificationListener` instance is connected to the server.
 
-Unsubscribe from `notification` (if string value) or list of notifications (if array value):
-- If server is not yet connected, the function returns a promise that resolves after removing `notification` from the list of pending subscriptions.
-- If server is already connected, the function returns a promise that resolves on successful unsubscription.
+**Returns**
 
-### `notificationListener.getSubscribed()`
+Boolean
 
-- Returns: \<Array\>
+---
+</details>
 
-Returns the list of notifications currently subscribed on the server. If the server is not connected, the list will be empty.
+<details>
+<summary><code>notificationListener.subscribe(notification)</code></summary>
+<br/>
 
-### `notificationListener.on(event, handler)`
+Subscribes to `notification`.
 
-- `event` \<string\>
-- `handler` \<Function\>
+>If server is not yet connected, subscription will be deferred until connection is established.
 
-Adds `handler` function for `event`.
+**Params**
 
-### `notificationListener.once(event, handler)`
+- `notification` (string | Array\<string>):
+  - If string, a single notification to subscribe to.
+  - If array, the list of notifications to subscribe to.
 
-- `event` \<string\>
-- `handler` \<Function\>
+**Returns**
 
-Adds one-time `handler` function for `event`.
+- If server is not yet connected, a Promise that resolves after adding `notification` to the list of pending subscriptions.
+- If server is already connected, a Promise that resolves on successful subscription.
 
-### `notificationListener.off(event[, handler])`
+</details>
 
-- `event` \<string\>
-- `handler` \<Function\>
+<details>
+<summary><code>notificationListener.unsubscribe(notification)</code></summary>
 
-Removes `handler` function for `event`. If `handler` is not specified, removes all handlers for the event.
+Unsubscribes from `notification`.
 
-### Event: `'connect'`
+**Params**
 
-Emitted when connection to server is established.
+- `notification` (string | Array\<string>):
+  - If string, a single notification to unsubscribe from.
+  - If array, the list of notifications to unsubscribe from.
 
-```
-notificationListener.on('connect', (server) => {
-  console.log('Connected to:', server);
-});
+**Returns**
 
-...
+- If server is not yet connected, a Promise that resolves when `notification` is removed from the list of pending subscriptions.
+- If server is already connected, a Promise that resolves on successful unsubscription.
 
-// Output:
-Connected to: { host: ..., port: ... }
-```
+---
+</details>
 
-### Event: `'disconnect'`
+<details>
+<summary><code>notificationListener.getSubscribed()</code></summary>
+<br />
+
+Returns the list of currently-subscribed notifications. The list will be empty if there is no connection with the server.
+
+**Returns**
+
+Array\<string>
+
+---
+</details>
+
+
+### Events
+
+<details>
+<summary><code>notificationListener.on('connect', (server) => ...)</code></summary>
+<br />
+
+Emitted when connection to `server` is established.
+
+**Listener Params**
+- `server`:
+  - `host`: (string)
+  - `port`: (string)
+
+---
+</details>
+
+<details>
+<summary><code>notificationListener.on('disconnect', (server) => ...)</code></summary>
+<br />
 
 Emitted when server is disconnected.
 
-```
-notificationListener.on('disconnect', (server) => {
-  console.log('Disconnected from:', server);
-});
+**Listener Params**
+- `server`:
+  - `host`: (string)
+  - `port`: (string)
 
-...
+---
+</details>
 
-// Output:
-Disconnected from: { host: ..., port: ... }
-```
+<details>
+<summary><code>notificationListener.on('notification', (data) => ...)</code></summary>
+<br />
 
-### Event: `'notification'`
 
 Emitted when a subscribed notification is received.
 
-Raw notifications received from the server have the following format:
-
-```
-[playerId] notification params
-```
-
-The `NotificationListener` processes the raw notification and emits the `'notification'` event with the processed payload.
-
-By way of example, given the following raw notification:
+`NotificationListener` parses the raw message received from the server and converts it from something like this:
 ```
 08%3A00%3A27%3Aa0%3Ad1%3A2c mixer volume 70
 ```
-
-and the following code that captures the `'notification'` event:
-
-```
-notificationListener.on('notification', (data) => {
-    ...
-});
-```
-
-`data` will be an object with the following property-values:
+into this:
 
 |Property                      |Value                                           |
 |------------------------------|------------------------------------------------|
@@ -234,11 +266,33 @@ notificationListener.on('notification', (data) => {
 |`raw` \<string\>              |'08%3A00%3A27%3Aa0%3Ad1%3A2c mixer volume 70'   |
 |`server` \<Object\>           |{ host: ..., port: ... }                        |
 
-\* Notifications that are not associated with a specific player, such as 'rescan', will not have the `playerId` property.
+
+**Listener Params**
+- `data`: ([Notification](docs/api/interfaces/Notification.md))
+  - `playerId`: (string)
+  - `notification`: (string)
+  - `params`: (Array\<string>)
+  - `raw`: (string) unprocessed notification message
+  - `server`: (object)
+    - `host`: (string)
+    - `port`: (string)
+
+> Notifications that are not associated with a specific player, such as 'rescan', will not have the `playerId` param.
+
+---
+</details>
 
 ### Errors
 
-When a promise returned by a function rejects, you can (should) catch the error:
+<details>
+<summary><i>Breaking change from v0.x to v1.x</i></summary>
+<br />
+
+In v0.x, error codes are defined as standalone constants.
+
+In v1.x, they are defined in the [`NotificationListenerErrorCode`](docs/api/enums/NotificationListenerErrorCode.md) enum.
+
+</details>
 
 ```
 notificationListener.start()
@@ -249,25 +303,40 @@ notificationListener.start()
     ...
   });
 ```
+Where an error is an instance of [`NotificationListenerError`](docs/api/classes/NotificationListenerError.md), you can obtain more information about it:
 
-`err` \<Error\>:
-- `code` \<integer\>: Error code
-- `message` \<string\>: Human-readable error message
-- `cause` \<Error\>: If present, the underlying `Error` that gives rise to the current error
+```
+if (err instanceof NotificationListenerError) {
+  console.log(`
+    Error: ${ err.message },
+    Code: ${ err.code },   // Can be undefined
+    Cause: ${ err.cause }  // Underlying error (can be undefined)
+  `);
+  ...
+}
+```
 
-### Error codes
+#### Error codes
 
-#### `NotificationListener.ERR_AUTH_FAILURE`
+| Enum: [`NotificationListenerErrorCode`](docs/api/enums/NotificationListenerErrorCode.md)      | Description                                   |
+|-------------------------|---------------------------------------------------------------------------------------------------------------------|
+|`AuthError`              | Login attempt failed for a password-protected server.                                                               |
+|`SendCommandError`       | A command could not be sent to the server. The underlying error can be obtained from `err.cause`.                   |
+|`CommandResponseTimeout` | After sending a command to the server, a response is expected but not received within a timeout period of 5 seconds.|
 
-Login attempt failed for a password-protected server.
+---
 
-#### `NotificationListener.ERR_SEND_CMD_FAILURE`
+## Running the Example
+```
+// ESM
+npm run example -- -h [server address] -p [server CLI port] -u [username] -pw [password]
 
-A command could not be sent to the server. The underlying `Error` can be obtained from the `cause` property.
+// CJS
+node index.cjs -h [server address] -p [server CLI port] -u [username] -pw [password]
+```
 
-#### `NotificationListener.ERR_CMD_RESP_TIMEOUT`
-
-After sending a command to the server, a response is expected but not received within a timeout period of 5 seconds.
+Only include options that are applicable. Generally, you do not have to specify `-p` since most
+LMS installations use the default 9090 port for CLI.
 
 ## Changelog
 
