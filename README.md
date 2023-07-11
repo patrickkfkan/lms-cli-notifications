@@ -340,6 +340,9 @@ LMS installations use the default 9090 port for CLI.
 
 ## Changelog
 
+1.0.0:
+- Migrate to TypeScript and package as ESM / CJS hybrid module
+
 0.1.2:
 - Fix blank credentials causing login timeout
 
